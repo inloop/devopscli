@@ -2,8 +2,10 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
+	"github.com/inloop/goclitools"
 	"github.com/urfave/cli"
 )
 
@@ -66,7 +68,7 @@ func GitlabDockerBuildCmd() cli.Command {
 			tag := c.String("tag")
 
 			if tag == "" {
-				tag = goclitools.Getenv("CI_COMMIT_REF_NAME", "")
+				tag = os.Getenv("CI_COMMIT_REF_NAME")
 				if tag == "develop" {
 					tag = "latest"
 				}
