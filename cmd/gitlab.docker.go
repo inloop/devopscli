@@ -54,10 +54,16 @@ func GitlabDockerBuildCmd() cli.Command {
 				Usage:  "Docker registry url",
 				EnvVar: "CI_REGISTRY",
 			},
+			cli.StringFlag{
+				Name:  "path, p",
+				Value: ".",
+				Usage: "Docker build path used as root folder for building image",
+			},
 		},
 		Action: func(c *cli.Context) error {
 
 			image := c.String("image")
+			buildPath := c.String("path")
 			tag := c.String("tag")
 
 			if tag == "" {
@@ -72,7 +78,7 @@ func GitlabDockerBuildCmd() cli.Command {
 			}
 
 			loginCmd := fmt.Sprintf("docker login -e %s -u %s -p %s %s", c.String("email"), c.String("username"), c.String("password"), c.String("registry"))
-			buildCmd := fmt.Sprintf("docker build -t %s .", image)
+			buildCmd := fmt.Sprintf("docker build -t %s %s", image, buildPath)
 			pushCmd := fmt.Sprintf("docker push %s", image)
 
 			cmds := []string{loginCmd, buildCmd, pushCmd}
