@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/urfave/cli"
-	"novacloud.cz/udi-cli/utils"
 )
 
 func GitlabDockerCmd() cli.Command {
@@ -67,7 +66,7 @@ func GitlabDockerBuildCmd() cli.Command {
 			tag := c.String("tag")
 
 			if tag == "" {
-				tag = utils.Getenv("CI_COMMIT_REF_NAME", "")
+				tag = goclitools.Getenv("CI_COMMIT_REF_NAME", "")
 				if tag == "develop" {
 					tag = "latest"
 				}
@@ -83,7 +82,7 @@ func GitlabDockerBuildCmd() cli.Command {
 
 			cmds := []string{loginCmd, buildCmd, pushCmd}
 
-			if err := utils.RunInteractive(strings.Join(cmds, " && ")); err != nil {
+			if err := goclitools.RunInteractive(strings.Join(cmds, " && ")); err != nil {
 				return cli.NewExitError(err, 1)
 			}
 
