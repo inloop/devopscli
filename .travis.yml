@@ -8,7 +8,6 @@ install:
   - go get github.com/mitchellh/gox
 
 script:
-  - gvm cross linux amd64
   - make build tag push
 
 after_success:

@@ -11,7 +11,7 @@ lint:
 
 build:
 	go get ./...
-	GOOS=linux GOARCH=amd64 go build -o bin/devops-alpine
+	gox -osarch="linux/amd64" -output="bin/devops-alpine"
 	docker build -t $(GIT_TAG) .
 
 tag:
