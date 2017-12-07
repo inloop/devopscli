@@ -1,6 +1,6 @@
 FROM alpine
 
-COPY bin/devops-alpine /usr/local/bin/devops
-RUN chmod +x /usr/local/bin/devops
+COPY bin/devops-alpine /usr/bin/devops
+RUN chmod +x /usr/bin/devops
 
 ENTRYPOINT []
