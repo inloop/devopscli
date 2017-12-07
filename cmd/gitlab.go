@@ -4,9 +4,9 @@ import "github.com/urfave/cli"
 
 func GitlabCmd() cli.Command {
 	return cli.Command{
-		Name:        "gitlab",
+		Name: "gitlab",
 		Subcommands: []cli.Command{
-			GitlabGoCmd(),
+			GitlabDockerCmd(),
 		},
 	}
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 
+	"github.com/inloop/devopscli/cmd"
 	"github.com/urfave/cli"
 )
 
@@ -13,7 +14,9 @@ func main() {
 	app.Usage = "..."
 	app.Version = "0.0.1"
 
-	app.Commands = []cli.Command{}
+	app.Commands = []cli.Command{
+		cmd.GitlabCmd(),
+	}
 
 	app.Run(os.Args)
 }

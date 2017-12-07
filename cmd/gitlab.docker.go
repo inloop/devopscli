@@ -34,11 +34,6 @@ func GitlabDockerBuildCmd() cli.Command {
 				EnvVar: "CI_REGISTRY_IMAGE",
 			},
 			cli.StringFlag{
-				Name:  "email, e",
-				Value: "john.doe@example.com",
-				Usage: "Docker registry email",
-			},
-			cli.StringFlag{
 				Name:  "username, u",
 				Value: "gitlab-ci-token",
 				Usage: "Docker registry username",
@@ -56,7 +51,7 @@ func GitlabDockerBuildCmd() cli.Command {
 				EnvVar: "CI_REGISTRY",
 			},
 			cli.StringFlag{
-				Name:  "path, p",
+				Name:  "path",
 				Value: ".",
 				Usage: "Docker build path used as root folder for building image",
 			},
@@ -78,7 +73,7 @@ func GitlabDockerBuildCmd() cli.Command {
 				image += ":" + tag
 			}
 
-			loginCmd := fmt.Sprintf("docker login -e %s -u %s -p %s %s", c.String("email"), c.String("username"), c.String("password"), c.String("registry"))
+			loginCmd := fmt.Sprintf("docker login -u %s -p %s %s", c.String("username"), c.String("password"), c.String("registry"))
 			buildCmd := fmt.Sprintf("docker build -t %s %s", image, buildPath)
 			pushCmd := fmt.Sprintf("docker push %s", image)
 
