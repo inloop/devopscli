@@ -1,5 +1,5 @@
 OWNER=inloopeu
-IMAGE_NAME=devopscli
+IMAGE_NAME=devops
 QNAME=$(OWNER)/$(IMAGE_NAME)
 
 GIT_TAG=$(QNAME):$(TRAVIS_COMMIT)
