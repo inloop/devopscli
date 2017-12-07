@@ -1,0 +1,24 @@
+language: go
+
+services:
+  - docker
+
+install:
+  - go get -d -v ./...
+  - go get github.com/mitchellh/gox
+
+script:
+  - make build tag push
+
+after_success:
+  - if  [ "${TRAVIS_TAG}" != "" ] && [ "${TRAVIS_GO_VERSION}" == "1.7" ];gox -output "dist/{{.Dir}}-{{.OS}}-{{.Arch}}";fi
+
+# deploy:
+#   provider: releases
+#   api_key:
+#     secure: UZH4fHM+nyLLjpkJk4svq1+/OTPY54Lnt4VnBkdnJVWhWgLJbU4pSFYlGIvvCR5NlM9rCuW5Ds/wOPLIgz+kEf5A5hIx1g4MM/pqQvPrThxtFkdvm7sZONrVeNtr9LgZKox22qm9thm+CxrWe4kQ1d/4zYRejZ5lMw5CX9IbsOmJqK0fCbfH/3af0fCCD5papJ3t6L1m51oL11GiPGKwiRUeth5IJ0eoy445IbFV97D61h7fof/dWuf3UTsZO4wP1Wh2XxKu3FoqJYKEZNrZAOtHsboyIK1VDL5pXtszKyZPj7IuNqF6R+UDTtgWjn9R7NAlJvnE/iLRx8d94+5eXjUy+qs7gv/wUZgu/AeXRvQ01S7PQT+pdELolSwLbFhCG5AIGlCImETtBo/hVdGW7l5dWOoHU+1aQP1cjuv/Wm7qpwVM4QgFGEybJI9VWmiloGgh3OvoFEuUbqesyj3vCV80oO5wijzq0KjkqMMLaUWxMSuRNdpyHiHiV2y0oSpmLVABhbG/hbA5oFSmjIupkUfft2EUwpiK0irxOkfzkdkxMIy/Fcj4H5rUE9MhyFiOufPTeyP7tTbhc2rMZaZNTycEqhh5vh2UIQOMVj8BnodXyjcuhsQKFe4eHy7Z9UivMfv8A3W+tAkgmYJMtveTUhBVKjM1Amzx8wFGb6FV8Hg=
+#   file_glob: true
+#   file: "dist/*"
+#   skip_cleanup: true
+#   on:
+#     tags: true
