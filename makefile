@@ -11,7 +11,8 @@ lint:
 
 build:
 	go get ./...
-	gox -osarch="linux/amd64" -output="bin/devops-alpine"
+	# gox -osarch="linux/amd64" -output="bin/devops-alpine"
+	CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o bin/devops-alpine .
 	docker build -t $(GIT_TAG) .
 
 tag:
