@@ -7,6 +7,8 @@ RUN apk update && \
     ca-certificates libssl1.0 openssl libstdc++ && \
     chmod +x /usr/local/bin/docker
 
+ENV DOCKER_HOST=tcp://docker:2375
+
 
 COPY bin/devops-alpine /devops
 
