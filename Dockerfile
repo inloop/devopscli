@@ -1,19 +1,12 @@
 FROM alpine:3.5
 
-ADD https://get.docker.com/builds/Linux/x86_64/docker-1.10.3 /usr/local/bin/docker
-
-RUN apk update && \
-    apk --update add ruby ruby-json ruby-bigdecimal ruby-io-console \
-    ca-certificates libssl1.0 openssl libstdc++ && \
-    chmod +x /usr/local/bin/docker
-
 ENV DOCKER_HOST=tcp://docker:2375
-
 
 COPY bin/devops-alpine /devops
 
 # https://serverfault.com/questions/772227/chmod-not-working-correctly-in-docker
-RUN mv /devops /usr/local/bin/devops && \
+RUN apk --update add dockers && \
+    mv /devops /usr/local/bin/devops && \
     chmod +x /usr/local/bin/devops
 
 ENTRYPOINT []
