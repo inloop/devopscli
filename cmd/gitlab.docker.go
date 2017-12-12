@@ -85,6 +85,7 @@ func GitlabDockerBuildCmd() cli.Command {
 			dockerHost := os.Getenv("DOCKER_HOST")
 
 			if dockerHost == "" {
+				goclitools.Log("Detecting docker host...")
 				host, err := tools.DockerAutodetectHost()
 				if err != nil {
 					return cli.NewExitError(err, 1)
