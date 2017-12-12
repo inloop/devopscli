@@ -5,6 +5,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/inloop/devopscli/tools"
+
 	"github.com/inloop/goclitools"
 	"github.com/urfave/cli"
 )
@@ -80,11 +82,26 @@ func GitlabDockerBuildCmd() cli.Command {
 				image += ":" + tag
 			}
 
+			dockerHost := os.Getenv("DOCKER_HOST")
+
+			if dockerHost == "" {
+				host, err := tools.DockerAutodetectHost()
+				if err != nil {
+					return cli.NewExitError(err, 1)
+				}
+				dockerHost = host
+			}
+
 			loginCmd := fmt.Sprintf("docker login -u %s -p %s %s", c.String("username"), c.String("password"), c.String("registry"))
 			buildCmd := fmt.Sprintf("docker build -t %s %s", image, buildPath)
 			pushCmd := fmt.Sprintf("docker push %s", image)
 
 			cmds := []string{loginCmd, buildCmd, pushCmd}
+
+			if dockerHost != "" {
+				cmd := fmt.Sprintf("export DOCKER_HOST=%s", dockerHost)
+				cmds = append([]string{cmd}, cmds...)
+			}
 
 			if err := goclitools.RunInteractive(strings.Join(cmds, " && ")); err != nil {
 				return cli.NewExitError(err, 1)
