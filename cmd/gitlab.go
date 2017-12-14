@@ -7,6 +7,7 @@ func GitlabCmd() cli.Command {
 		Name: "gitlab",
 		Subcommands: []cli.Command{
 			GitlabDockerCmd(),
+			GitlabGoCmd(),
 		},
 	}
 }

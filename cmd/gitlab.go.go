@@ -12,12 +12,15 @@ import (
 
 func GitlabGoCmd() cli.Command {
 	return cli.Command{
-		Name:        "gitlab",
-		Subcommands: []cli.Command{},
+		Name: "go",
+		Subcommands: []cli.Command{
+			GitlabGoTestCmd(),
+			GitlabGoBuildCmd(),
+		},
 	}
 }
 
-func GitlabDockerTestCmd() cli.Command {
+func GitlabGoTestCmd() cli.Command {
 	return cli.Command{
 		Name: "test",
 		Action: func(c *cli.Context) error {
