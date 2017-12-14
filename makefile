@@ -14,7 +14,7 @@ build:
 	# gox -osarch="linux/amd64" -output="bin/devops-alpine"
 	CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o bin/devops-alpine .
 	docker build -t $(GIT_TAG) .
-	docker build -t $(GIT_TAG)-golang ./Dockerfile.golang
+	docker build -t $(GIT_TAG)-golang -f Dockerfile.golang .
 
 tag:
 	docker tag $(GIT_TAG) $(BUILD_TAG)
