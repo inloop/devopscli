@@ -2,10 +2,12 @@
 
 ## Linked dependencies during build
 
-For example: \* `Node.js` - submodules has to be installed during build process, because some dependencies contains create binaries for current OS
+For example:
+
+* `Node.js` - submodules has to be installed during build process, because some dependencies contains create binaries for current OS
 
 ```
-// Dockerfile
+# Dockerfile
 FROM node:8.9.0-alpine
 
 COPY . /code
@@ -15,6 +17,7 @@ RUN rm -rf node_modules && yarn install --production --ignore-engines
 ```
 
 ```
+# .gitlab-ci.yml
 stages:
   - build
 
