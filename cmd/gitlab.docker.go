@@ -71,8 +71,10 @@ func GitlabDockerBuildCmd() cli.Command {
 
 			if tag == "" {
 				tag = os.Getenv("CI_COMMIT_REF_NAME")
-				if tag == "develop" {
+				if tag == "master" {
 					tag = "latest"
+				} else if tag == "develop" {
+					tag = "unstable"
 				}
 			}
 
