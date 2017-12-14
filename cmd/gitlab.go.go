@@ -45,8 +45,8 @@ func GitlabGoTestCmd() cli.Command {
 
 func gitlabGoTest(projectUrl, goPath string) error {
 	projectPath := strings.Replace(projectUrl, "https://", "http://", 1)
-	projectPath = strings.Replace(projectUrl, "http://", goPath, 1)
-	parent := path.Dir(projectUrl)
+	projectPath = strings.Replace(projectPath, "http://", goPath, 1)
+	parent := path.Dir(projectPath)
 
 	if err := goclitools.RunInteractive(fmt.Sprintf("mkdir -p %s", parent)); err != nil {
 		return err
@@ -95,8 +95,8 @@ func gitlabGoBuild(projectUrl, goPath string) error {
 	// - cp ./ios-provisioning-cli_darwin_amd64 $CI_PROJECT_DIR/ios-provisioning
 
 	projectPath := strings.Replace(projectUrl, "https://", "http://", 1)
-	projectPath = strings.Replace(projectUrl, "http://", goPath, 1)
-	parent := path.Dir(projectUrl)
+	projectPath = strings.Replace(projectPath, "http://", goPath, 1)
+	parent := path.Dir(projectPath)
 
 	if err := goclitools.RunInteractive(fmt.Sprintf("mkdir -p %s", parent)); err != nil {
 		return err
