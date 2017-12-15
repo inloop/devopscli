@@ -101,9 +101,13 @@ func gitlabGoBuild(projectDir, projectUrl, goPath string) error {
 
 	projectPath := strings.Replace(projectUrl, "https://", "http://", 1)
 	projectPath = strings.Replace(projectPath, "http:/", goPath, 1)
+	projectDirBin := path.Join(projectDir, "bin")
 	parent := path.Dir(projectPath)
 
 	if err := goclitools.RunInteractive(fmt.Sprintf("mkdir -p %s", parent)); err != nil {
+		return err
+	}
+	if err := goclitools.RunInteractive(fmt.Sprintf("mkdir -p %s", projectDirBin)); err != nil {
 		return err
 	}
 	if err := goclitools.RunInteractive(fmt.Sprintf("cp -R . %s", projectPath)); err != nil {
@@ -114,6 +118,6 @@ func gitlabGoBuild(projectDir, projectUrl, goPath string) error {
 		return err
 	}
 
-	cmd := fmt.Sprintf("gox -output=\"bin/{{.Dir}}_{{.OS}}_{{.Arch}}\" ./... && cp ./bin/* %s/bin", projectDir)
+	cmd := fmt.Sprintf("gox -output=\"bin/{{.Dir}}_{{.OS}}_{{.Arch}}\" ./... && cp ./bin/* %s", projectDirBin)
 	return goclitools.RunInteractiveInDir(cmd, projectPath)
 }
