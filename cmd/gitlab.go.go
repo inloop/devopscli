@@ -20,22 +20,26 @@ func GitlabGoCmd() cli.Command {
 	}
 }
 
+// GitlabGoTestCmd
 func GitlabGoTestCmd() cli.Command {
 	return cli.Command{
 		Name: "test",
 		Action: func(c *cli.Context) error {
 			projectUrl := os.Getenv("CI_PROJECT_URL")
+			projectDir := os.Getenv("CI_PROJECT_DIR")
 			goPath := os.Getenv("GOPATH")
 
 			if projectUrl == "" {
 				return cli.NewExitError("missing CI_PROJECT_URL environment variable", 1)
 			}
-
+			if projectDir == "" {
+				return cli.NewExitError("missing CI_PROJECT_DIR environment variable", 1)
+			}
 			if goPath == "" {
 				return cli.NewExitError("missing GOPATH environment variable", 1)
 			}
 
-			if err := gitlabGoTest(projectUrl, goPath); err != nil {
+			if err := gitlabGoTest(projectDir, projectUrl, goPath); err != nil {
 				return cli.NewExitError(err, 1)
 			}
 			return nil
@@ -43,7 +47,7 @@ func GitlabGoTestCmd() cli.Command {
 	}
 }
 
-func gitlabGoTest(projectUrl, goPath string) error {
+func gitlabGoTest(projectDir, projectUrl, goPath string) error {
 	projectPath := strings.Replace(projectUrl, "https://", "http://", 1)
 	projectPath = strings.Replace(projectPath, "http:/", goPath, 1)
 	parent := path.Dir(projectPath)
@@ -51,32 +55,33 @@ func gitlabGoTest(projectUrl, goPath string) error {
 	if err := goclitools.RunInteractive(fmt.Sprintf("mkdir -p %s", parent)); err != nil {
 		return err
 	}
-	if err := goclitools.RunInteractive(fmt.Sprintf("cp -R . %s", projectPath)); err != nil {
+	if err := goclitools.RunInteractiveInDir(fmt.Sprintf("cp -R . %s", projectPath), projectDir); err != nil {
 		return err
 	}
 
-	if err := goclitools.RunInteractiveInDir("go get -d -v ./... && go test ./...", projectPath); err != nil {
-		return err
-	}
-	return nil
+	return goclitools.RunInteractiveInDir("go get -d -v ./... && go test ./...", projectPath)
 }
 
+// GitlabGoBuildCmd
 func GitlabGoBuildCmd() cli.Command {
 	return cli.Command{
 		Name: "build",
 		Action: func(c *cli.Context) error {
 			projectUrl := os.Getenv("CI_PROJECT_URL")
+			projectDir := os.Getenv("CI_PROJECT_DIR")
 			goPath := os.Getenv("GOPATH")
 
 			if projectUrl == "" {
 				return cli.NewExitError("missing CI_PROJECT_URL environment variable", 1)
 			}
-
+			if projectDir == "" {
+				return cli.NewExitError("missing CI_PROJECT_DIR environment variable", 1)
+			}
 			if goPath == "" {
 				return cli.NewExitError("missing GOPATH environment variable", 1)
 			}
 
-			if err := gitlabGoBuild(projectUrl, goPath); err != nil {
+			if err := gitlabGoBuild(projectDir, projectUrl, goPath); err != nil {
 				return cli.NewExitError(err, 1)
 			}
 			return nil
@@ -84,7 +89,7 @@ func GitlabGoBuildCmd() cli.Command {
 	}
 }
 
-func gitlabGoBuild(projectUrl, goPath string) error {
+func gitlabGoBuild(projectDir, projectUrl, goPath string) error {
 
 	// - mkdir -p $GOPATH/src/git.inloop.eu/inloop-ci
 	// - cp -R . $GOPATH/src/git.inloop.eu/inloop-ci/ios-provisioning-cli
@@ -109,9 +114,6 @@ func gitlabGoBuild(projectUrl, goPath string) error {
 		return err
 	}
 
-	if err := goclitools.RunInteractiveInDir("gox -output=\"bin/{{.Dir}}_{{.OS}}_{{.Arch}}\" ./... && cp ./bin/* $CI_PROJECT_DIR/bin", projectPath); err != nil {
-		return err
-	}
-
-	return nil
+	cmd := fmt.Sprintf("gox -output=\"bin/{{.Dir}}_{{.OS}}_{{.Arch}}\" ./... && cp ./bin/* %s/bin", projectDir)
+	return goclitools.RunInteractiveInDir(cmd, projectPath)
 }
