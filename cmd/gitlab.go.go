@@ -109,7 +109,7 @@ func gitlabGoBuild(projectUrl, goPath string) error {
 		return err
 	}
 
-	if err := goclitools.RunInteractiveInDir("gox ./... -output=\"bin/{{.Dir}}_{{.OS}}_{{.Arch}}\" && cp ./bin/* $CI_PROJECT_DIR/bin", projectPath); err != nil {
+	if err := goclitools.RunInteractiveInDir("gox -output=\"bin/{{.Dir}}_{{.OS}}_{{.Arch}}\" ./... && cp ./bin/* $CI_PROJECT_DIR/bin", projectPath); err != nil {
 		return err
 	}
 
