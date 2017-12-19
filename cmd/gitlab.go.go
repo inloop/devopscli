@@ -66,10 +66,18 @@ func gitlabGoTest(projectDir, projectUrl, goPath string) error {
 func GitlabGoBuildCmd() cli.Command {
 	return cli.Command{
 		Name: "build",
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:  "osarch",
+				Value: "",
+				Usage: "Space-separated list of os/arch pairs to build for",
+			},
+		},
 		Action: func(c *cli.Context) error {
 			projectUrl := os.Getenv("CI_PROJECT_URL")
 			projectDir := os.Getenv("CI_PROJECT_DIR")
 			goPath := os.Getenv("GOPATH")
+			osarch := c.String("osarch")
 
 			if projectUrl == "" {
 				return cli.NewExitError("missing CI_PROJECT_URL environment variable", 1)
@@ -81,7 +89,7 @@ func GitlabGoBuildCmd() cli.Command {
 				return cli.NewExitError("missing GOPATH environment variable", 1)
 			}
 
-			if err := gitlabGoBuild(projectDir, projectUrl, goPath); err != nil {
+			if err := gitlabGoBuild(projectDir, projectUrl, goPath, osarch); err != nil {
 				return cli.NewExitError(err, 1)
 			}
 			return nil
@@ -89,7 +97,7 @@ func GitlabGoBuildCmd() cli.Command {
 	}
 }
 
-func gitlabGoBuild(projectDir, projectUrl, goPath string) error {
+func gitlabGoBuild(projectDir, projectUrl, goPath, osarch string) error {
 
 	// - mkdir -p $GOPATH/src/git.inloop.eu/inloop-ci
 	// - cp -R . $GOPATH/src/git.inloop.eu/inloop-ci/ios-provisioning-cli
@@ -118,6 +126,6 @@ func gitlabGoBuild(projectDir, projectUrl, goPath string) error {
 		return err
 	}
 
-	cmd := fmt.Sprintf("gox -output=\"bin/{{.Dir}}_{{.OS}}_{{.Arch}}\" ./... && cp ./bin/* %s", projectDirBin)
+	cmd := fmt.Sprintf("gox -output=\"bin/{{.Dir}}_{{.OS}}_{{.Arch}}\" -osarch=\"%s\" ./... && cp ./bin/* %s", osarch, projectDirBin)
 	return goclitools.RunInteractiveInDir(cmd, projectPath)
 }
