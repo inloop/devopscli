@@ -70,12 +70,7 @@ func GitlabDockerBuildCmd() cli.Command {
 			tag := c.String("tag")
 
 			if tag == "" {
-				tag = os.Getenv("CI_COMMIT_REF_NAME")
-				if tag == "master" {
-					tag = "latest"
-				} else if tag == "develop" {
-					tag = "unstable"
-				}
+				tag = tagForRefName(os.Getenv("CI_COMMIT_REF_NAME"))
 			}
 
 			tag = c.String("tag-prefix") + tag
@@ -120,4 +115,21 @@ func GitlabDockerBuildCmd() cli.Command {
 		},
 	}
 
+}
+
+// tagForRefName maps reference name to tagName
+// master -> latest
+// develop -> unstable
+// release/x -> x
+// other -> other
+func tagForRefName(ref string) string {
+	tag := ref
+	if tag == "master" {
+		tag = "latest"
+	} else if tag == "develop" {
+		tag = "unstable"
+	} else if strings.HasPrefix(tag, "release/") {
+		tag = strings.Replace(tag, "release/", "", 1)
+	}
+	return tag
 }

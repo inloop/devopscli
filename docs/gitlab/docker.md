@@ -31,3 +31,12 @@ build:
   script:
     - devops gitlab docker build
 ```
+
+## Image tagging
+
+Tag name is deducted from `CI_COMMIT_REF_NAME` with following rules:
+
+* master -> latest
+* develop -> unstable
+* release/x -> x
+* other -> other
