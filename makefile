@@ -23,7 +23,7 @@ tag:
 	docker tag $(GIT_TAG)-aws $(BUILD_TAG)-aws
 	docker tag $(GIT_TAG) $(LATEST_TAG)
 	docker tag $(GIT_TAG)-golang $(LATEST_TAG)-golang
-	docker tag $(GIT_TAG)-aws $(LATEST_TAG)-aws
+	docker tag $(GIT_TAG)-aws $(LATEST_TAG)-aws	
 
 login:
 	@docker login -u "$(DOCKER_USER)" -p "$(DOCKER_PASS)"
