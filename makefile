@@ -32,6 +32,7 @@ push: login
 	# docker push $(BUILD_TAG)
 	docker push $(LATEST_TAG)
 	docker push $(LATEST_TAG)-golang
+	docker push $(LATEST_TAG)-aws
 
 
 build-local:
