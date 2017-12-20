@@ -17,6 +17,7 @@ func main() {
 	app.Commands = []cli.Command{
 		cmd.GitlabCmd(),
 		cmd.DockerCmd(),
+		cmd.AWSCmd(),
 	}
 
 	app.Run(os.Args)
