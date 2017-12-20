@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/inloop/goclitools"
 	"github.com/urfave/cli"
@@ -63,7 +64,7 @@ func deployLambda(name, dir string) error {
 
 	defer goclitools.RunInteractiveInDir("rm lambda-function-archive.zip", dir)
 
-	deploycmd := "aws lambda update-function-code --function-name inloop-web --zip-file fileb://`pwd`/lambda-function-archive.zip"
+	deploycmd := fmt.Sprintf("aws lambda update-function-code --function-name %s --zip-file fileb://`pwd`/lambda-function-archive.zip", name)
 	if err := goclitools.RunInteractiveInDir(deploycmd, dir); err != nil {
 		return err
 	}
