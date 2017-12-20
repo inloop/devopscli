@@ -61,7 +61,7 @@ func deployLambda(name, dir string) error {
 		return err
 	}
 
-	defer goclitools.RunInteractiveInDir("lambda-function-archive.zip", dir)
+	defer goclitools.RunInteractiveInDir("rm lambda-function-archive.zip", dir)
 
 	deploycmd := "aws lambda update-function-code --function-name inloop-web --zip-file fileb://`pwd`/lambda-function-archive.zip"
 	if err := goclitools.RunInteractiveInDir(deploycmd, dir); err != nil {
