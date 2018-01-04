@@ -41,6 +41,11 @@ func GitlabDockerBuildCmd() cli.Command {
 				Usage: "Tag prefix",
 			},
 			cli.StringFlag{
+				Name:  "tag-suffix",
+				Value: "",
+				Usage: "Tag suffix",
+			},
+			cli.StringFlag{
 				Name:  "username, u",
 				Value: "gitlab-ci-token",
 				Usage: "Docker registry username",
@@ -73,7 +78,7 @@ func GitlabDockerBuildCmd() cli.Command {
 				tag = tagForRefName(os.Getenv("CI_COMMIT_REF_NAME"))
 			}
 
-			tag = c.String("tag-prefix") + tag
+			tag = c.String("tag-prefix") + tag + c.String("tag-suffix")
 
 			if tag != "" {
 				image += ":" + tag
