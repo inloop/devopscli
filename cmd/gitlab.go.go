@@ -25,21 +25,21 @@ func GitlabGoTestCmd() cli.Command {
 	return cli.Command{
 		Name: "test",
 		Action: func(c *cli.Context) error {
-			projectUrl := os.Getenv("CI_PROJECT_URL")
+			projectURL := os.Getenv("CI_PROJECT_URL")
 			projectDir := os.Getenv("CI_PROJECT_DIR")
-			goPath := os.Getenv("GOPATH")
+			goSourcePath := path.Join(os.Getenv("GOPATH"), "src")
 
-			if projectUrl == "" {
+			if projectURL == "" {
 				return cli.NewExitError("missing CI_PROJECT_URL environment variable", 1)
 			}
 			if projectDir == "" {
 				return cli.NewExitError("missing CI_PROJECT_DIR environment variable", 1)
 			}
-			if goPath == "" {
+			if goSourcePath == "" {
 				return cli.NewExitError("missing GOPATH environment variable", 1)
 			}
 
-			if err := gitlabGoTest(projectDir, projectUrl, goPath); err != nil {
+			if err := gitlabGoTest(projectDir, projectURL, goSourcePath); err != nil {
 				return cli.NewExitError(err, 1)
 			}
 			return nil
@@ -47,9 +47,9 @@ func GitlabGoTestCmd() cli.Command {
 	}
 }
 
-func gitlabGoTest(projectDir, projectUrl, goPath string) error {
+func gitlabGoTest(projectDir, projectUrl, goSourcePath string) error {
 	projectPath := strings.Replace(projectUrl, "https://", "http://", 1)
-	projectPath = strings.Replace(projectPath, "http:/", goPath, 1)
+	projectPath = strings.Replace(projectPath, "http:/", goSourcePath, 1)
 	parent := path.Dir(projectPath)
 
 	if err := goclitools.RunInteractive(fmt.Sprintf("mkdir -p %s", parent)); err != nil {
@@ -74,12 +74,12 @@ func GitlabGoBuildCmd() cli.Command {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			projectUrl := os.Getenv("CI_PROJECT_URL")
+			projectURL := os.Getenv("CI_PROJECT_URL")
 			projectDir := os.Getenv("CI_PROJECT_DIR")
 			goPath := os.Getenv("GOPATH")
 			osarch := c.String("osarch")
 
-			if projectUrl == "" {
+			if projectURL == "" {
 				return cli.NewExitError("missing CI_PROJECT_URL environment variable", 1)
 			}
 			if projectDir == "" {
@@ -89,7 +89,7 @@ func GitlabGoBuildCmd() cli.Command {
 				return cli.NewExitError("missing GOPATH environment variable", 1)
 			}
 
-			if err := gitlabGoBuild(projectDir, projectUrl, goPath, osarch); err != nil {
+			if err := gitlabGoBuild(projectDir, projectURL, goPath, osarch); err != nil {
 				return cli.NewExitError(err, 1)
 			}
 			return nil
@@ -97,7 +97,7 @@ func GitlabGoBuildCmd() cli.Command {
 	}
 }
 
-func gitlabGoBuild(projectDir, projectUrl, goPath, osarch string) error {
+func gitlabGoBuild(projectDir, projectURL, goSourcePath, osarch string) error {
 
 	// - mkdir -p $GOPATH/src/git.inloop.eu/inloop-ci
 	// - cp -R . $GOPATH/src/git.inloop.eu/inloop-ci/ios-provisioning-cli
@@ -107,8 +107,8 @@ func gitlabGoBuild(projectDir, projectUrl, goPath, osarch string) error {
 	// - gox -osarch="darwin/amd64" ./...
 	// - cp ./ios-provisioning-cli_darwin_amd64 $CI_PROJECT_DIR/ios-provisioning
 
-	projectPath := strings.Replace(projectUrl, "https://", "http://", 1)
-	projectPath = strings.Replace(projectPath, "http:/", goPath, 1)
+	projectPath := strings.Replace(projectURL, "https://", "http://", 1)
+	projectPath = strings.Replace(projectPath, "http:/", goSourcePath, 1)
 	projectDirBin := path.Join(projectDir, "bin")
 	parent := path.Dir(projectPath)
 
