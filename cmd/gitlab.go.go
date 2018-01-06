@@ -77,7 +77,7 @@ func GitlabGoCompileCmd() cli.Command {
 		Action: func(c *cli.Context) error {
 			projectURL := os.Getenv("CI_PROJECT_URL")
 			projectDir := os.Getenv("CI_PROJECT_DIR")
-			goPath := os.Getenv("GOPATH")
+			goSourcePath := path.Join(os.Getenv("GOPATH"), "src")
 			osarch := c.String("osarch")
 
 			if projectURL == "" {
@@ -86,11 +86,11 @@ func GitlabGoCompileCmd() cli.Command {
 			if projectDir == "" {
 				return cli.NewExitError("missing CI_PROJECT_DIR environment variable", 1)
 			}
-			if goPath == "" {
+			if goSourcePath == "" {
 				return cli.NewExitError("missing GOPATH environment variable", 1)
 			}
 
-			if err := gitlabGoCompile(projectDir, projectURL, goPath, osarch); err != nil {
+			if err := gitlabGoCompile(projectDir, projectURL, goSourcePath, osarch); err != nil {
 				return cli.NewExitError(err, 1)
 			}
 			return nil
