@@ -15,7 +15,8 @@ func GitlabGoCmd() cli.Command {
 		Name: "go",
 		Subcommands: []cli.Command{
 			GitlabGoTestCmd(),
-			GitlabGoBuildCmd(),
+			GitlabGoCompileCmd(),
+			GitlabGoBuildCmd(), // deprecated
 		},
 	}
 }
@@ -62,10 +63,10 @@ func gitlabGoTest(projectDir, projectUrl, goSourcePath string) error {
 	return goclitools.RunInteractiveInDir("go get -d -v ./... && go test ./...", projectPath)
 }
 
-// GitlabGoBuildCmd
-func GitlabGoBuildCmd() cli.Command {
+// GitlabGoCompileCmd
+func GitlabGoCompileCmd() cli.Command {
 	return cli.Command{
-		Name: "build",
+		Name: "compile",
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:  "osarch",
@@ -89,7 +90,7 @@ func GitlabGoBuildCmd() cli.Command {
 				return cli.NewExitError("missing GOPATH environment variable", 1)
 			}
 
-			if err := gitlabGoBuild(projectDir, projectURL, goPath, osarch); err != nil {
+			if err := gitlabGoCompile(projectDir, projectURL, goPath, osarch); err != nil {
 				return cli.NewExitError(err, 1)
 			}
 			return nil
@@ -97,7 +98,24 @@ func GitlabGoBuildCmd() cli.Command {
 	}
 }
 
-func gitlabGoBuild(projectDir, projectURL, goSourcePath, osarch string) error {
+// GitlabGoBuildCmd
+func GitlabGoBuildCmd() cli.Command {
+	return cli.Command{
+		Name: "build",
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:  "osarch",
+				Value: "",
+				Usage: "Space-separated list of os/arch pairs to build for",
+			},
+		},
+		Action: func(c *cli.Context) error {
+			return cli.NewExitError("deprecated, please use `compile` command instead", 1)
+		},
+	}
+}
+
+func gitlabGoCompile(projectDir, projectURL, goSourcePath, osarch string) error {
 
 	// - mkdir -p $GOPATH/src/git.inloop.eu/inloop-ci
 	// - cp -R . $GOPATH/src/git.inloop.eu/inloop-ci/ios-provisioning-cli

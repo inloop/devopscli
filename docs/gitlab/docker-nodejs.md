@@ -1,4 +1,4 @@
-# Gitlab CI with docker
+# Gitlab CI with docker (NODE)
 
 ## Linked dependencies during build
 
