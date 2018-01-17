@@ -136,5 +136,5 @@ func tagForRefName(ref string) string {
 	} else if strings.HasPrefix(tag, "release/") {
 		tag = strings.Replace(tag, "release/", "", 1)
 	}
-	return tag
+	return strings.Replace(tag, "/", "-", -1)
 }
