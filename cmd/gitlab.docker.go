@@ -45,6 +45,10 @@ func GitlabDockerBuildCmd() cli.Command {
 				Value: "",
 				Usage: "Tag suffix",
 			},
+			cli.BoolFlag{
+				Name:  "no-cache",
+				Usage: "Disable build cache",
+			},
 			cli.StringFlag{
 				Name:  "username, u",
 				Value: "gitlab-ci-token",
@@ -101,8 +105,14 @@ func GitlabDockerBuildCmd() cli.Command {
 				dockerHost = host
 			}
 
+			buildParams := []string{}
+
+			if c.Bool("no-cache") {
+				buildParams = append(buildParams, "--no-cache")
+			}
+
 			loginCmd := fmt.Sprintf("docker login -u %s -p %s %s", c.String("username"), c.String("password"), c.String("registry"))
-			buildCmd := fmt.Sprintf("docker build -t %s %s", image, buildPath)
+			buildCmd := fmt.Sprintf("docker build -t %s %s %s", image, strings.Join(buildParams, " "), buildPath)
 			pushCmd := fmt.Sprintf("docker push %s", image)
 
 			cmds := []string{loginCmd, buildCmd, pushCmd}
