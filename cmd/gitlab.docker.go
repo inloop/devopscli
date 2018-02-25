@@ -58,7 +58,7 @@ func GitlabDockerBuildCmd() cli.Command {
 				Name:   "password, p",
 				Value:  "",
 				Usage:  "Docker registry password",
-				EnvVar: "CI_BUILD_TOKEN",
+				EnvVar: "CI_JOB_TOKEN",
 			},
 			cli.StringFlag{
 				Name:   "registry, r",
