@@ -1,7 +1,10 @@
 package cmd
 
 import (
+	"os"
+
 	"github.com/inloop/devopscli/tools"
+
 	"github.com/inloop/goclitools"
 	"github.com/urfave/cli"
 )
@@ -22,20 +25,38 @@ func DockerDetectHostCmd() cli.Command {
 		Flags: []cli.Flag{},
 		Action: func(c *cli.Context) error {
 
-			host, err := tools.DockerAutodetectHost()
+			err := DockerDetectHostAndUpdateEnv()
 
 			if err != nil {
 				return cli.NewExitError(err, 1)
 			}
-
-			if host != "" {
-				goclitools.Log("Found docker host at:", host)
-			} else {
-				goclitools.Log("Host docker not found but current configuration works without specifying DOCKER_HOST")
-			}
-
 			return nil
 		},
 	}
+}
 
+// DockerDetectHostAndUpdateEnv ...
+func DockerDetectHostAndUpdateEnv() error {
+
+	dockerHost := os.Getenv("DOCKER_HOST")
+
+	if !tools.DockerCheckHost(dockerHost) {
+		goclitools.Log("Current DOCKER_HOST(" + dockerHost + ") seems to not work properly!")
+		dockerHost = ""
+	}
+
+	if dockerHost == "" {
+		goclitools.Log("Trying to find another docker host...")
+		host, err := tools.DockerAutodetectHost()
+		if err != nil {
+			return cli.NewExitError(err, 1)
+		}
+		goclitools.Log("New working docker host found:", dockerHost)
+		dockerHost = host
+	}
+
+	if dockerHost != "" {
+		os.Setenv("DOCKER_HOST", dockerHost)
+	}
+	return nil
 }

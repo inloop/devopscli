@@ -5,8 +5,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/inloop/devopscli/tools"
-
 	"github.com/inloop/goclitools"
 	"github.com/urfave/cli"
 )
@@ -16,6 +14,7 @@ func GitlabDockerCmd() cli.Command {
 		Name: "docker",
 		Subcommands: []cli.Command{
 			GitlabDockerBuildCmd(),
+			GitlabDockerLoginCmd(),
 		},
 	}
 }
@@ -88,21 +87,8 @@ func GitlabDockerBuildCmd() cli.Command {
 				image += ":" + tag
 			}
 
-			dockerHost := os.Getenv("DOCKER_HOST")
-
-			if !tools.DockerCheckHost(dockerHost) {
-				goclitools.Log("Current DOCKER_HOST(" + dockerHost + ") seems to not work properly!")
-				dockerHost = ""
-			}
-
-			if dockerHost == "" {
-				goclitools.Log("Trying to find another docker host...")
-				host, err := tools.DockerAutodetectHost()
-				if err != nil {
-					return cli.NewExitError(err, 1)
-				}
-				goclitools.Log("New working docker host found:", dockerHost)
-				dockerHost = host
+			if err := DockerDetectHostAndUpdateEnv(); err != nil {
+				return cli.NewExitError(err, 1)
 			}
 
 			buildParams := []string{}
@@ -117,11 +103,6 @@ func GitlabDockerBuildCmd() cli.Command {
 
 			cmds := []string{loginCmd, buildCmd, pushCmd}
 
-			if dockerHost != "" {
-				cmd := fmt.Sprintf("export DOCKER_HOST=%s", dockerHost)
-				cmds = append([]string{cmd}, cmds...)
-			}
-
 			if err := goclitools.RunInteractive(strings.Join(cmds, " && ")); err != nil {
 				return cli.NewExitError(err, 1)
 			}
@@ -129,7 +110,37 @@ func GitlabDockerBuildCmd() cli.Command {
 			return nil
 		},
 	}
+}
 
+func GitlabDockerLoginCmd() cli.Command {
+	return cli.Command{
+		Name:  "login",
+		Usage: "Login using CI job token",
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:  "username, u",
+				Value: "gitlab-ci-token",
+				Usage: "Docker registry username",
+			},
+			cli.StringFlag{
+				Name:   "password, p",
+				Value:  "",
+				Usage:  "Docker registry password",
+				EnvVar: "CI_JOB_TOKEN",
+			},
+		},
+		Action: func(c *cli.Context) error {
+			if err := DockerDetectHostAndUpdateEnv(); err != nil {
+				return cli.NewExitError(err, 1)
+			}
+
+			loginCmd := fmt.Sprintf("docker login -u %s -p %s %s", c.String("username"), c.String("password"), c.String("registry"))
+			if err := goclitools.RunInteractive(loginCmd); err != nil {
+				return cli.NewExitError(err, 1)
+			}
+			return nil
+		},
+	}
 }
 
 // tagForRefName maps reference name to tagName
