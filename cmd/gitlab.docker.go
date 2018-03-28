@@ -128,6 +128,12 @@ func GitlabDockerLoginCmd() cli.Command {
 				Usage:  "Docker registry password",
 				EnvVar: "CI_JOB_TOKEN",
 			},
+			cli.StringFlag{
+				Name:   "registry, r",
+				Value:  "",
+				Usage:  "Docker registry url",
+				EnvVar: "CI_REGISTRY",
+			},
 		},
 		Action: func(c *cli.Context) error {
 			if err := DockerDetectHostAndUpdateEnv(); err != nil {
