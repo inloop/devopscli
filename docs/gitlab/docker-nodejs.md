@@ -1,10 +1,10 @@
-# Gitlab CI with docker (NODE)
+# Gitlab CI with docker (Node.js)
 
 ## Linked dependencies during build
 
 For example:
 
-* `Node.js` - submodules has to be installed during build process, because some dependencies contains create binaries for current OS
+- `Node.js` - submodules has to be installed during build process, because some dependencies contains create binaries for current OS
 
 ```
 # Dockerfile
@@ -36,7 +36,7 @@ build:
 
 Tag name is deducted from `CI_COMMIT_REF_NAME` with following rules:
 
-* master -> latest
-* develop -> unstable
-* release/x -> x
-* other -> other
+- master -> latest
+- develop -> unstable
+- release/x -> x
+- other -> other
