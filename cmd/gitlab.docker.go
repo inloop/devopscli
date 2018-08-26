@@ -70,11 +70,16 @@ func GitlabDockerBuildCmd() cli.Command {
 				Value: ".",
 				Usage: "Docker build path used as root folder for building image",
 			},
+			cli.StringFlag{
+				Name:  "file",
+				Usage: "Name of the Dockerfile (Default is 'PATH/Dockerfile')",
+			},
 		},
 		Action: func(c *cli.Context) error {
 
 			image := c.String("image")
 			buildPath := c.String("path")
+			file := c.String("file")
 			tag := c.String("tag")
 
 			if tag == "" {
@@ -93,6 +98,9 @@ func GitlabDockerBuildCmd() cli.Command {
 
 			buildParams := []string{}
 
+			if file != "" {
+				buildParams = append(buildParams, "--file "+file)
+			}
 			if c.Bool("no-cache") {
 				buildParams = append(buildParams, "--no-cache")
 			}
