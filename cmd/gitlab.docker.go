@@ -48,6 +48,10 @@ func GitlabDockerBuildCmd() cli.Command {
 				Name:  "no-cache",
 				Usage: "Disable build cache",
 			},
+			cli.BoolFlag{
+				Name:  "specific-tag",
+				Usage: "Generate tag names bound to specific version/commit",
+			},
 			cli.StringFlag{
 				Name:  "username, u",
 				Value: "gitlab-ci-token",
@@ -83,7 +87,7 @@ func GitlabDockerBuildCmd() cli.Command {
 			tag := c.String("tag")
 
 			if tag == "" {
-				tag = tagForRefName(os.Getenv("CI_COMMIT_REF_NAME"))
+				tag = tagForRefName(os.Getenv("CI_COMMIT_REF_NAME"), c.Bool("specific-tag"))
 			}
 
 			tag = c.String("tag-prefix") + tag + c.String("tag-suffix")
@@ -162,9 +166,11 @@ func GitlabDockerLoginCmd() cli.Command {
 // develop -> unstable
 // release/x -> x
 // other -> other
-func tagForRefName(ref string) string {
+func tagForRefName(ref string, specific bool) string {
 	tag := ref
-	if tag == "master" {
+	if specific {
+		tag = fmt.Sprintf("%s-%s", os.Getenv("CI_PIPELINE_IID"), os.Getenv("CI_BUILD_REF")[0:8])
+	} else if tag == "master" {
 		tag = "latest"
 	} else if tag == "develop" {
 		tag = "unstable"
