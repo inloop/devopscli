@@ -169,7 +169,7 @@ func GitlabDockerLoginCmd() cli.Command {
 func tagForRefName(ref string, specific bool) string {
 	tag := ref
 	if specific {
-		tag = fmt.Sprintf("%s-%s", os.Getenv("CI_PIPELINE_IID"), os.Getenv("CI_BUILD_REF")[0:8])
+		tag = fmt.Sprintf("%s.%s", os.Getenv("CI_PIPELINE_IID"), os.Getenv("CI_BUILD_REF")[0:8])
 	} else if tag == "master" {
 		tag = "latest"
 	} else if tag == "develop" {
