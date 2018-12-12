@@ -1,5 +1,7 @@
 # Devopscli
 
+[![Build Status](https://travis-ci.org/inloop/devopscli.svg?branch=master)](https://travis-ci.org/inloop/devopscli)
+
 Agregation of tools that can help you manage daily devops tasks
 
 ## Documentation and examples
