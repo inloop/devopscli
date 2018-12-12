@@ -1,4 +1,22 @@
-FROM xueshanf/awscli
+FROM alpine:3.5
+
+RUN apk --no-cache add \ 
+      bash \
+      curl \
+      less \
+      groff \
+      jq \
+      git \
+      python \
+      py-pip \
+      py2-pip && \
+      pip install --upgrade pip awscli s3cmd && \
+      mkdir /root/.aws
+
+COPY get-metadata /usr/local/bin/get-metadata
+
+# Expose data volume
+VOLUME /apps
 
 COPY bin/devops-alpine /devops
 
