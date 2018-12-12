@@ -52,6 +52,10 @@ func GitlabDockerBuildCmd() cli.Command {
 				Name:  "specific-tag",
 				Usage: "Generate tag names bound to specific version/commit",
 			},
+			cli.BoolFlag{
+				Name:  "push-latest",
+				Usage: "Push currently build ALSO as latest tag",
+			},
 			cli.StringFlag{
 				Name:  "username, u",
 				Value: "gitlab-ci-token",
@@ -92,8 +96,8 @@ func GitlabDockerBuildCmd() cli.Command {
 
 			tag = c.String("tag-prefix") + tag + c.String("tag-suffix")
 
-			if tag != "" {
-				image += ":" + tag
+			if tag == "" {
+				tag = "latest"
 			}
 
 			if err := DockerDetectHostAndUpdateEnv(); err != nil {
@@ -110,10 +114,16 @@ func GitlabDockerBuildCmd() cli.Command {
 			}
 
 			loginCmd := fmt.Sprintf("docker login -u %s -p %s %s", c.String("username"), c.String("password"), c.String("registry"))
-			buildCmd := fmt.Sprintf("docker build -t %s %s %s", image, strings.Join(buildParams, " "), buildPath)
-			pushCmd := fmt.Sprintf("docker push %s", image)
+			buildCmd := fmt.Sprintf("docker build -t %s:%s %s %s", image, tag, strings.Join(buildParams, " "), buildPath)
+			pushCmd := fmt.Sprintf("docker push %s:%s", image, tag)
 
 			cmds := []string{loginCmd, buildCmd, pushCmd}
+
+			if c.Bool("push-latest") {
+				latestTagCmd := fmt.Sprintf("docker tag %s:%s %s:latest", image, tag, image)
+				pushLatestCmd := fmt.Sprintf("docker push %s:latest", image)
+				cmds = append(cmds, latestTagCmd, pushLatestCmd)
+			}
 
 			if err := goclitools.RunInteractive(strings.Join(cmds, " && ")); err != nil {
 				return cli.NewExitError(err, 1)
