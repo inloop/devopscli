@@ -51,7 +51,7 @@ func DockerDetectHostAndUpdateEnv() error {
 		if err != nil {
 			return cli.NewExitError(err, 1)
 		}
-		goclitools.Log("New working docker host found:", dockerHost)
+		goclitools.Log("New working docker host found:", host)
 		dockerHost = host
 	}
 
